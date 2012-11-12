@@ -16,25 +16,23 @@ def alignSentencePair(ttable, E, F):
     #          = (const) p(f_m | e_n)
     #  where const ensures that sum_n al[n][m] = 1 for all m
     Z = {}
-    for m in range(M):
-        Z[m] = Counter()
+    
+    
     for n in range(N):
         al[n] = Counter()
-    ### TODO: YOUR CODE HERE
-        Z = sum( [ttable[E[n]][x] for x in F])
-        print 'Z is: %f'%Z
+    ### TODO: YOUR CODE HERE    
         for m in range(M):
-            #al[n][m] = Counter()
+            if m not in Z:
+                Z[m] = 0
+                Z[m] = Z[m] + 0
+            
             al[n][m] = ttable[E[n]][F[m]]  # = p(f_m | e_n)
-            print m
-            Z[m] = Z[m] + ttable[E[n]][F[m]]
-            print 'al[n][m] is: %f'%al[n][m]
-            #if (Z != 0):
-            #    al[n][m] *= float(1/Z)     # I think 1/sum(p(f|e)) is the normalizing factor... 
-        #al[n].normalize()
+            #print Z[m]
+            Z[m] += ttable[E[n]][F[m]]
+            #print 'al[n][m] is: %f'%al[n][m]
     for n in al.iterkeys():
         for m in al[n].iterkeys():
-            al[n][m] *= float(1/Z[m])
+            al[n][m] *= float(1/Z[m])      # I think 1/sum(p(f|e)) is the normalizing factor... 
 
     return al
 
@@ -43,12 +41,17 @@ def alignSentencePair(ttable, E, F):
 # corresponding to the aligned words
 def addFractionalCounts(ttable, E, F, al):
     for n in al.iterkeys():
-        print 'n is : %s'%n
+        #print 'n is : %s'%n
         for m in al[n].iterkeys():
-            print 'm is : %s'%m
-            print 'E[n] is: %s, F[m] is: %s'%(E[n], F[m])
+            #print 'm is : %s'%m
+            #print 'E[n] is: %s, F[m] is: %s'%(E[n], F[m])
+            #print 'al[n][m] is: %f'%al[n][m]
+            if E[n] not in ttable:
+                ttable[E[n]] = Counter()
+            if F[m] not in ttable[E[n]]:
+                ttable[E[n]][F[m]] = 0
             ttable[E[n]][F[m]] += al[n][m]
-        Z = sum( [ttable[E[n]][x] for x in F])
+        #Z = sum( [ttable[E[n]][x] for x in F])
         #for m in al[n].iterkeys():
         #    ttable[E[n]][F[m]] *= float(1/Z) #normalize ttable entries by new prob amount.
         ttable[E[n]].normalize()
@@ -160,5 +163,5 @@ simpleTestCorpus = [
 if __name__ == '__main__':
     ttable = uniformTTableInitialization(simpleTestCorpus)
     alignSentencePair(ttable, simpleTestCorpus[0][0], simpleTestCorpus[0][1])
-    #ttable = runEM(simpleTestCorpus)
+    ttable = runEM(simpleTestCorpus)
     #ttable

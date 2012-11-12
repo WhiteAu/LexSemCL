@@ -2,8 +2,8 @@ import re
 import os
 from math import *
 from util import *
-
-vw = '/home/hal/bin/vw'
+#USE YOUR LOCAL PATH. THIS IS MINE. USE YOURS
+vw = '/home/hal/Documents/CompLing/vowpal_wabbit/vowpalwabbit/vw'
 
 # readWSDCorpus: returns the a LIST of (labelInfo, doc) pairs, where
 # labelInfo is a four-tuple (sent #, word #, fWord, eWord).  here,
