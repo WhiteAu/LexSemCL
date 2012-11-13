@@ -93,7 +93,7 @@ def complexPairFeatures(doc, i, j, ew, wprob):
     
     ###String similarity goes here
     #feats['w_dist'] = levenshtein(ew, doc[i][j])
-    feats['w_dist'] = levenshteinSimilarity(ew, doc[i][j])
+    feats['strsim'] = levenshteinSimilarity(ew, doc[i][j])
     
     ###context disambiguation goes here
         
