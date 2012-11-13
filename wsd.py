@@ -92,7 +92,8 @@ def complexPairFeatures(doc, i, j, ew, wprob):
     feats = Counter()
     
     ###String similarity goes here
-    feats['w_dist'] = levenshtein(ew, doc[i][j])
+    #feats['w_dist'] = levenshtein(ew, doc[i][j])
+    feats['w_dist'] = levenshteinSimilarity(ew, doc[i][j])
     
     ###context disambiguation goes here
         
@@ -121,6 +122,9 @@ def levenshtein(s1, s2):
         previous_row = current_row
  
     return previous_row[-1]
+
+def levenshteinSimilarity(s1, s2):
+    return 1.0 - (levenshtein(s1,s2) / float(max(len(s1), len(s2))))
     
 if __name__ == "__main__":
     (train_acc, test_acc, test_pred) = runExperiment('Science.tr', 'Science.de', simpleFFeatures, simpleEFeatures, simplePairFeatures, quietVW=True)
