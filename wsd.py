@@ -99,21 +99,28 @@ def complexPairFeatures(doc, i, j, ew, wprob):
         
     return feats
     
-# Levenshtein distance: test this
+# Levenshtein distance: looks good, but check this
+# pulled from wikibooks cookbook:
+# http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Levenshtein_distance#Python
 def levenshtein(s1, s2):
-    l1 = len(s1)
-    l2 = len(s2)
-
-    matrix = [range(l1 + 1)] * (l2 + 1)
-    for zz in range(l2 + 1):
-      matrix[zz] = range(zz,zz + l1 + 1)
-    for zz in range(0,l2):
-      for sz in range(0,l1):
-        if s1[sz] == s2[zz]:
-          matrix[zz+1][sz+1] = min(matrix[zz+1][sz] + 1, matrix[zz][sz+1] + 1, matrix[zz][sz])
-        else:
-          matrix[zz+1][sz+1] = min(matrix[zz+1][sz] + 1, matrix[zz][sz+1] + 1, matrix[zz][sz] + 1)
-    return matrix[l2][l1]
+    if len(s1) < len(s2):
+        return levenshtein(s2, s1)
+ 
+    # len(s1) >= len(s2)
+    if len(s2) == 0:
+        return len(s1)
+ 
+    previous_row = xrange(len(s2) + 1)
+    for i, c1 in enumerate(s1):
+        current_row = [i + 1]
+        for j, c2 in enumerate(s2):
+            insertions = previous_row[j + 1] + 1 # j+1 instead of j since previous_row and current_row are one character longer
+            deletions = current_row[j] + 1       # than s2
+            substitutions = previous_row[j] + (c1 != c2)
+            current_row.append(min(insertions, deletions, substitutions))
+        previous_row = current_row
+ 
+    return previous_row[-1]
     
 if __name__ == "__main__":
     (train_acc, test_acc, test_pred) = runExperiment('Science.tr', 'Science.de', simpleFFeatures, simpleEFeatures, simplePairFeatures, quietVW=True)
