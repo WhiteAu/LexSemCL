@@ -2,6 +2,8 @@ import re
 import os
 from math import *
 from util import *
+import tree
+
 #USE YOUR LOCAL PATH. THIS IS MINE. USE YOURS
 vw = os.getenv('VW_PATH','/home/hal/Documents/CompLing/vowpal_wabbit/vowpalwabbit/vw')
 #vw = '/home/hal/Documents/CompLing/vowpal_wabbit/vowpalwabbit/vw'
@@ -207,6 +209,76 @@ def runExperiment(trainingFile, testFile, getFFeatures, getEFeatures, getPairFea
 
     return (train_acc, test_acc, test_pred)
 
+# Added this variant on runExperiment per Hal's Piazza suggestion.  -- Alex
+def runExperimentParsing(trainingFile, testFile, getFFeatures, getEFeatures, getPairFeatures=None, filePrefix='wsd_vw', quietVW=False, trainingPOSFile=None, testPOSFile=None ):
+    trainFileVW = filePrefix + '.tr'
+    testFileVW  = filePrefix + '.te'
+    modelFileVW = filePrefix + '.model'
+
+    trainingCorpus = readWSDCorpus(trainingFile)
+    testCorpus = None if testFile is None else readWSDCorpus(testFile)
+
+    # We need to parse the POS files, both train and test, and pass that to feature creation.
+    for tree in iterateTree(trainingPOSFile):
+        # What do we do here?
+        print '.'
+
+    print 'collecting translation table'
+    ttable = collectTranslationTable(trainingCorpus)
+
+    print 'generating classification data'
+    generateVWData(trainingCorpus, ttable, getFFeatures, getEFeatures, getPairFeatures, trainFileVW)
+    if testCorpus is not None:
+        generateVWData(testCorpus, ttable, getFFeatures, getEFeatures, getPairFeatures, testFileVW )
+
+    trainVW(trainFileVW, modelFileVW, quietVW)
+
+    train_pred = testVW(trainFileVW, modelFileVW, quietVW)
+    train_acc = evaluatePredictions(trainingCorpus, ttable, train_pred)
+
+    test_pred = None
+    test_acc = 0
+    if testCorpus is not None:
+        test_pred = testVW(testFileVW , modelFileVW, quietVW)
+        test_acc  = evaluatePredictions(testCorpus, ttable, test_pred)
+
+    return (train_acc, test_acc, test_pred)
+
+# I copied this from P2 extractGrammar.py  -- Alex
+def iterateTree(filename):
+    h = open(filename, 'r')
+    for line in h:
+        tree = de_annotate(bracket_parse(line))
+        if tree is None: continue
+
+        # TEMPORARY:
+        #print "Tree before binarization:"
+        #print tree.pp()
+        #tree = binarizeTree(tree, horizSize, verticSize, runFancyCode)
+        #print "Tree after binarization:"
+        #print tree.pp()
+
+        yield tree
+    h.close()
+
+
+# I copied this from P2 extractGrammar.py; not sure what it does!  -- Alex
+def de_annotate(tree):
+    if type(tree) is str:
+        if len(tree) == 0: return None
+        if tree == '-NONE-': return None
+        return tree.split('-')[0]
+
+    if len(tree.node) == 0: return None
+    if tree.node == '-NONE-': return None
+    children = []
+    for i,child in enumerate(tree):
+        newChild = de_annotate(child)
+        if newChild is not None:
+            children.append(newChild)
+    if len(children) == 0:
+        return None
+    return Tree(tree.node.split('-')[0], children)
 
 def trainVW(dataFilename, modelFilename, quietVW=False):
     cmd = vw + ' -k -c --passes 10 -q st --power_t 0.5 --csoaa_ldf m -d ' + dataFilename + ' -f ' + modelFilename
