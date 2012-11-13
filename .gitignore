@@ -1,7 +1,3 @@
 *.pyc
-*.model
-*.te
-*.te.*
-*.tr
-*.tr.*
+wsd_vw*
 wsd_output
