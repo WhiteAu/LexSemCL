@@ -79,6 +79,9 @@ def simplePairFeatures(doc, i, j, ew, wprob):
 
 def complexEFeatures(w, wprob):
     feats = Counter()
+    
+    ###syntax tree parsing goes here
+    
     return feats
 
 def complexFFeatures(doc, i, j):
@@ -87,6 +90,10 @@ def complexFFeatures(doc, i, j):
 
 def complexPairFeatures(doc, i, j, ew, wprob):
     feats = Counter()
+    
+    ###context disambiguation goes here
+        
+        
     return feats
 
 if __name__ == "__main__":
