@@ -3,7 +3,8 @@ import os
 from math import *
 from util import *
 #USE YOUR LOCAL PATH. THIS IS MINE. USE YOURS
-vw = '/home/hal/Documents/CompLing/vowpal_wabbit/vowpalwabbit/vw'
+vw = os.getenv('VW_PATH','/home/hal/Documents/CompLing/vowpal_wabbit/vowpalwabbit/vw')
+#vw = '/home/hal/Documents/CompLing/vowpal_wabbit/vowpalwabbit/vw'
 
 # readWSDCorpus: returns the a LIST of (labelInfo, doc) pairs, where
 # labelInfo is a four-tuple (sent #, word #, fWord, eWord).  here,

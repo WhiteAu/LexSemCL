@@ -21,11 +21,10 @@ def simpleEFeatures(w, wprob):
     # this word and a second feature for the two character suffix.
     # for example, on the word "happiness", generate "pre_ha" and
     # "suf_ss" as features.
-    feats['pre'] = 'pre_'+w[:2]
-    feats['suf'] = 'suf_'+w[-2:]
     ### TODO: YOUR CODE HERE
+    feats['pre_'+w[:2]] = 1
+    feats['suf_'+w[-2:]] = 1
     
-
     return feats
 
 # simpleFFeatures(doc, i, j) asks for features about the French word
@@ -56,13 +55,9 @@ def simpleFFeatures(doc, i, j):
         if ow == j:
             continue #no sense double counting!
         other_word = doc[i][ow] #grab the word in question
-        if 'sc_'+other_word not in feats:
-            feats['sc_'+other_word] = Counter()
         
         feats['sc_'+other_word] += 1
         
-    
-
     return feats
 
 # simplePairFeatures(doc, i, j, ew, wprob) -- the first three are the

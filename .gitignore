@@ -1,0 +1,7 @@
+*.pyc
+*.model
+*.te
+*.te.*
+*.tr
+*.tr.*
+wsd_output
