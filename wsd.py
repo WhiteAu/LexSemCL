@@ -86,13 +86,39 @@ def complexEFeatures(w, wprob):
     return feats
 
 def complexFFeatures(doc, i, j):
+    w = doc[i][j]
 
-    feats = simpleFFeatures(doc, i, j)
-    #global POS
-    #feats = Counter()
-    for ps in pos.POS[i]:
-        feats['pos_'+ps] += 1
+    feats = Counter()
 
+    # generate a single feature with the (french) word identity
+    feats[w] = 1
+
+    # generate a feature corresponding to the two character prefix of
+    # this word and a second feature for the two character suffix; same
+    # deal about pre_ and suf_
+    ### TODO: YOUR CODE HERE
+    feats['pre_'+w[:2]] = 1
+    feats['suf_'+w[-2:]] = 1
+    
+    # generate features corresponding to the OTHER words in this
+    # sentence.  for some other word "w", create a feature of the form
+    # sc_w, where sc means "sentence context".  if a single word (eg.,
+    # "the") appears twice in the context, the feature sc_the should
+    # have value two.
+    #dist = 1 #0.739450127877
+    dist = 2 # 0.745684143223
+    #dist = 3 # 0.735453964194
+    fw = max(0, j-dist)
+    lw = min(len(doc[i]), j+dist) 
+    #for ow in range(len(doc[i])):
+    for ow in range(fw,lw):
+        if ow == j:
+            continue #no sense double counting!
+        other_word = doc[i][ow] #grab the word in question
+        
+        feats['sc_'+other_word] += 1
+        #feats['pos_'+pos.POS[i][ow]] += 1
+        
     return feats
 
 def complexPairFeatures(doc, i, j, ew, wprob):
