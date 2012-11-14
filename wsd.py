@@ -2,6 +2,7 @@ import re
 import os
 from util import *
 from wsddata import *
+import pos
 
 # simpleEFeatures(w) takes a word (in English) and generates relevant
 # features.  At the very least, this should include the word identity
@@ -85,7 +86,11 @@ def complexEFeatures(w, wprob):
     return feats
 
 def complexFFeatures(doc, i, j):
-    feats = Counter()
+    feats = simpleFFeatures(doc, i, j)
+    #global POS
+    #feats = Counter()
+    for ps in pos.POS[i]:
+        feats['pos_'+ps] += 1
     return feats
 
 def complexPairFeatures(doc, i, j, ew, wprob):
@@ -93,7 +98,7 @@ def complexPairFeatures(doc, i, j, ew, wprob):
     
     ###String similarity goes here
     #feats['w_dist'] = levenshtein(ew, doc[i][j])
-    feats['strsim'] = levenshteinSimilarity(ew, doc[i][j])
+    feats['strsim'] = levenshteinSimilarity(ew, doc[i][j]) * 100
     
     ###context disambiguation goes here
         

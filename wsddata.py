@@ -3,6 +3,9 @@ import os
 from math import *
 from util import *
 from tree import *
+import pos
+
+#POS = None
 
 #USE YOUR LOCAL PATH. THIS IS MINE. USE YOURS
 vw = os.getenv('VW_PATH','/home/hal/Documents/CompLing/vowpal_wabbit/vowpalwabbit/vw')
@@ -211,6 +214,7 @@ def runExperiment(trainingFile, testFile, getFFeatures, getEFeatures, getPairFea
 
 # Added this variant on runExperiment per Hal's Piazza suggestion.  -- Alex
 def runExperimentParsing(trainingFile, testFile, getFFeatures, getEFeatures, getPairFeatures=None, filePrefix='wsd_vw', quietVW=False, trainingPOSFile=None, testPOSFile=None ):
+    #global POS
     trainFileVW = filePrefix + '.tr'
     testFileVW  = filePrefix + '.te'
     modelFileVW = filePrefix + '.model'
@@ -218,15 +222,14 @@ def runExperimentParsing(trainingFile, testFile, getFFeatures, getEFeatures, get
     trainingCorpus = readWSDCorpus(trainingFile)
     testCorpus = None if testFile is None else readWSDCorpus(testFile)
 
-    # We need to parse the POS files, both train and test, and pass that to feature creation.
-    trainingPOS = readPOSFile(trainingPOSFile)
-    testPOS = None if testPOSFile is None else readPOSFile(testPOSFile)
-
     print 'collecting translation table'
     ttable = collectTranslationTable(trainingCorpus)
 
     print 'generating classification data'
+    pos.POS = readPOSFile(trainingPOSFile)
     generateVWData(trainingCorpus, ttable, getFFeatures, getEFeatures, getPairFeatures, trainFileVW)
+
+    pos.POS = None if testPOSFile is None else readPOSFile(testPOSFile)
     if testCorpus is not None:
         generateVWData(testCorpus, ttable, getFFeatures, getEFeatures, getPairFeatures, testFileVW )
 
