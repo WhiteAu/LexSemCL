@@ -2,7 +2,7 @@ import re
 import os
 from math import *
 from util import *
-import tree
+from tree import *
 
 #USE YOUR LOCAL PATH. THIS IS MINE. USE YOURS
 vw = os.getenv('VW_PATH','/home/hal/Documents/CompLing/vowpal_wabbit/vowpalwabbit/vw')
@@ -219,9 +219,8 @@ def runExperimentParsing(trainingFile, testFile, getFFeatures, getEFeatures, get
     testCorpus = None if testFile is None else readWSDCorpus(testFile)
 
     # We need to parse the POS files, both train and test, and pass that to feature creation.
-    for tree in iterateTree(trainingPOSFile):
-        # What do we do here?
-        print '.'
+    trainingPOS = readPOSFile(trainingPOSFile)
+    testPOS = None if testPOSFile is None else readPOSFile(testPOSFile)
 
     print 'collecting translation table'
     ttable = collectTranslationTable(trainingCorpus)
@@ -244,19 +243,28 @@ def runExperimentParsing(trainingFile, testFile, getFFeatures, getEFeatures, get
 
     return (train_acc, test_acc, test_pred)
 
+# Get a list[sent][word] of POS out of the file
+def readPOSFile(filename):
+    #lst = []
+    #for tree in iterateTree(filename):
+        #lst.append(tree.preterminals())
+    #return lst
+    lst = []
+    fin = open(filename,'r')
+    for line in fin:
+        lst.append(line.strip().split(','))
+    fin.close()
+    return lst
+
 # I copied this from P2 extractGrammar.py  -- Alex
 def iterateTree(filename):
     h = open(filename, 'r')
     for line in h:
+        if line.strip() == '':
+            continue
+        line = re.sub('\(', '(TOP', line, count=1)
         tree = de_annotate(bracket_parse(line))
         if tree is None: continue
-
-        # TEMPORARY:
-        #print "Tree before binarization:"
-        #print tree.pp()
-        #tree = binarizeTree(tree, horizSize, verticSize, runFancyCode)
-        #print "Tree after binarization:"
-        #print tree.pp()
 
         yield tree
     h.close()
