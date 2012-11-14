@@ -86,11 +86,13 @@ def complexEFeatures(w, wprob):
     return feats
 
 def complexFFeatures(doc, i, j):
+
     feats = simpleFFeatures(doc, i, j)
     #global POS
     #feats = Counter()
     for ps in pos.POS[i]:
         feats['pos_'+ps] += 1
+
     return feats
 
 def complexPairFeatures(doc, i, j, ew, wprob):
@@ -100,8 +102,6 @@ def complexPairFeatures(doc, i, j, ew, wprob):
     #feats['w_dist'] = levenshtein(ew, doc[i][j])
     feats['strsim'] = levenshteinSimilarity(ew, doc[i][j]) * 100
     
-    ###context disambiguation goes here
-        
         
     return feats
     
@@ -132,7 +132,7 @@ def levenshteinSimilarity(s1, s2):
     return 1.0 - (levenshtein(s1,s2) / float(max(len(s1), len(s2))))
     
 if __name__ == "__main__":
-    (train_acc, test_acc, test_pred) = runExperiment('Science.tr', 'Science.de', simpleFFeatures, simpleEFeatures, simplePairFeatures, quietVW=True)
+    (train_acc, test_acc, test_pred) = runExperiment('Science.tr', 'Science.de', simpleFFeatures, simpleEFeatures, complexPairFeatures, quietVW=True)
     print 'training accuracy =', train_acc
     print 'testing  accuracy =', test_acc
     h = open('wsd_output', 'w')
